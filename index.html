@@ -113,15 +113,16 @@
     <section class="card">
       <h2>ส่วนที่ 1: หลักการเทียบยาฉีด/สารน้ำ</h2>
       <ul class="rules">
-        <li>เทียบแบบรวม: ยาฉีด IV/IM/SC + สารน้ำ เทียบกับค่าฉีด 55822/55823/55824 + ค่าให้สารน้ำ 55820 (ไม่สน route ที่คีย์ กันกรณี tramadol สั่ง IV แต่วิธีใช้ default IM)</li>
+        <li>เทียบแบบรวม: ยาฉีด IV/IM/SC + สารน้ำ เทียบกับค่าฉีด 55822/55823/55824 (SC/ID) + ค่าให้สารน้ำ 55820 (ไม่สน route ที่คีย์ กันกรณี tramadol สั่ง IV แต่วิธีใช้ default IM)</li>
         <li>ฉีดเข้าข้อ 71711 + intralesion 71820 เทียบรวมเป็นกลุ่มหัตถการ · RIG ฉีดรอบแผลนับเป็น intralesion</li>
         <li>ยาฉีดจ่ายล่วงหน้ารายเดือน (qty &gt; 1, q 1 mo / ทุกเดือน) ไม่บังคับมีค่าฉีด แต่มีก็ไม่นับเกิน</li>
-        <li>วัคซีนพิษสุนัขบ้า/ยา ID: ยอมรับค่าฉีดกลุ่มใดก็ได้ สูงสุด 2 รายการต่อยา</li>
+        <li>วัคซีนพิษสุนัขบ้า (PCEC/rabi/verorab/speeda หรือวัคซีนใน visit ที่มี Z24.2/Z20.3) และยา ID: IM 1 จุด (55823) หรือ ID 2 จุด (55824 x2) ยอมรับค่าฉีดกลุ่มใดก็ได้ สูงสุด 2 รายการต่อยา</li>
         <li>NSS/D5/SWI ขนาดเล็ก (≤100 ml, amp/vial) หรือวิธีใช้ผสม/ละลายยา = ตัวทำละลาย ไม่ต้องมีค่าฉีด</li>
         <li>ยาชา (lidocaine, bupivacaine ฯลฯ) = ยาประกอบหัตถการ ไม่ต้องมีค่าฉีดของตัวเอง</li>
-        <li>NSS/SWI ใน visit ที่มีพ่นยา/ทำแผล หรือวิธีใช้ ≤20 ml = ไม่ใช่สารน้ำ</li>
+        <li>NSS/SWI ใน visit ที่มีพ่นยา 55320, ทำแผล 55810–55812, ล้างตา 55210 หรือวิธีใช้ ≤20 ml = ไม่ใช่สารน้ำ</li>
         <li>มี ICD10 Z51.8/Z51.9 ไม่ตรวจกรณีค่าฉีดมากกว่ายา แต่ยังตรวจกรณีขาด</li>
-        <li>ตัดออก: ยาใช้ภายนอก, glucose กินทดสอบในฝากครรภ์, ยาฉีดกลับบ้าน (insulin pen, วิธีใช้ก่อนอาหาร/ฉีดเอง)</li>
+        <li>มีค่าฉีดแต่ไม่มียาฉีดเลย และไม่มี 55020/55021 = มาฉีดยาตามนัด (นำยามาเอง) ไม่แสดงในรายการ</li>
+        <li>ตัดออก: ยาใช้ภายนอก, glucose กินทดสอบในฝากครรภ์, ยาฉีดกลับบ้าน (insulin pen/penfill, insulin 300 IU, วิธีใช้ก่อนอาหาร/ฉีดเอง)</li>
         <li>เฉพาะ OPD (ไม่มี AN)</li>
       </ul>
     </section>
@@ -175,20 +176,21 @@
    เปลี่ยนเฝือก (ICD10 Z47.9 หรือเคยใส่เฝือกกลุ่มเดียวกันใน 6 สัปดาห์ก่อน) ไม่บังคับ arm sling / อุปกรณ์ช่วยเดิน / 56111 ซ้ำ
    เพิ่ม/แก้กฎส่วนที่ 2 ได้ที่ CTE rules: trig = มีรหัสใดรหัสหนึ่ง, req = ต้องมีอย่างน้อย 1 รหัส (ADP code หรือแท็ก DRUG:xxx)
    ===== ส่วนที่ 1 ยาฉีด/สารน้ำ =====
-   วิธีเทียบแบบรวม: ยาฉีด IV/IM/SC + สารน้ำ (รวมกัน) เทียบกับ ค่าฉีด 55822/55823/55824 + ค่าให้สารน้ำ 55820 (รวมกัน)
+   วิธีเทียบแบบรวม: ยาฉีด IV/IM/SC + สารน้ำ (รวมกัน) เทียบกับ ค่าฉีด 55822/55823/55824(SC/ID) + ค่าให้สารน้ำ 55820 (รวมกัน)
    ไม่สนว่าคีย์ route ไหน (กันปัญหา tramadol สั่ง IV แต่วิธีใช้ default เป็น IM และยา drip ที่คิดเป็นค่าให้สารน้ำแล้ว)
    ฉีดเข้าข้อ 71711 + intralesion 71820 เทียบรวมเป็นกลุ่มหัตถการ (TA ใช้ได้ทั้งสองแบบ วิธีใช้มักไม่ถูกแก้)
    ถ้าจำนวนยาทั้งหมดเท่ากับจำนวนค่าฉีดทั้งหมด แต่กลุ่มไม่ตรง (เช่น วิธีใช้ IM แต่คีย์ 71820) -> สถานะ ตรวจวิธีใช้ ไม่นับว่าขาด/เกิน
    ยาฉีดที่จ่ายล่วงหน้าเป็นรอบ (qty > 1 และวิธีใช้ q 1 mo / ทุกเดือน / วันที่ N เช่น haloperidol decanoate) ไม่บังคับต้องมีค่าฉีดวันนั้น
      แต่ถ้ามีค่าฉีดก็ไม่นับว่าเกิน (อาจฉีดเข็มแรกวันนั้น)
-   วัคซีนพิษสุนัขบ้า (PCEC ฯลฯ) และยาที่วิธีใช้เป็น ID: ฉีด IM 1 จุด หรือ ID 2 จุด -> ยอมรับค่าฉีดกลุ่มใดก็ได้ สูงสุด 2 รายการต่อยา
+   วัคซีนพิษสุนัขบ้า (ชื่อมี PCEC/rabi/verorab/speeda หรือวัคซีนใน visit ที่มี Z24.2/Z20.3) และยาที่วิธีใช้เป็น ID: ฉีด IM 1 จุด (55823) หรือ ID 2 จุด (55824 x2) -> ยอมรับค่าฉีดกลุ่มใดก็ได้ สูงสุด 2 รายการต่อยา
    NSS/D5/SWI ขนาดเล็ก (<=100 ml, amp/vial) หรือวิธีใช้ ผสม/ละลายยา = ตัวทำละลาย ไม่ต้องมีค่าฉีด (ถ้ามีค่าให้สารน้ำ 1 รายการก็ไม่นับเกิน)
    ยาชา (lidocaine/xylocaine/bupivacaine ฯลฯ) = ยาผสม/ยาประกอบหัตถการ ไม่ต้องมีค่าฉีดของตัวเอง
      (ถ้ามีแค่ยาชาแล้วคีย์ 71711/71820 1 รายการ เช่น trigger point injection ก็ไม่นับเกิน)
-   NSS/SWI ใน visit ที่มีค่าพ่นยา (ADP 55320) หรือทำแผล (55810) หรือวิธีใช้ระบุปริมาณน้อย (<=20 ml เช่น NSS 4 ml) = ไม่ใช่สารน้ำ
+   NSS/SWI ใน visit ที่มีค่าพ่นยา (ADP 55320) ทำแผล (55810-55812) หรือล้างตา (55210) หรือวิธีใช้ระบุปริมาณน้อย (<=20 ml เช่น NSS 4 ml) = ไม่ใช่สารน้ำ
    มีค่าฉีดแต่ไม่มียาใน visit (ผู้ป่วยนำยามาเองจากบ้าน/รพ.อื่น เช่น EPO, ceftriaxone OD) -> ถ้ามีหลักฐานจะขึ้นสถานะ นำยามาเอง?
      แทน คีย์เกิน หลักฐาน = CC มีคำ มาฉีด/นำยามา/drip/EPO ฯลฯ หรือเคยจ่ายยาฉีด >= 2 หน่วยใน 60 วันก่อน
      ถ้ามี ICD10 Z51.8 / Z51.9 ไม่ตรวจกรณีค่าฉีดมากกว่ายาเลย (ไม่แสดงในรายการ) แต่ยังตรวจกรณีขาด
+     visit ที่มีค่าฉีดแต่ไม่มียาฉีดเลย และไม่มี 55020/55021 = มาฉีดยาตามนัด (นำยามาเอง) ไม่แสดงเช่นกัน
    RIG ฉีดรอบแผล (infiltrate) นับเป็นกลุ่ม intralesion
    ตัดออกไม่ตรวจ: ยาใช้ภายนอก (ล้างจมูก/ล้างแผล/พ่น), ยารับประทาน (glucose ใน visit ฝากครรภ์: ICD10 Z34/Z35/Z36/O24/Z13.1 หรือมี ADP 30011, หรือวิธีใช้เป็นกิน/ดื่ม) และยาฉีดกลับบ้าน (insulin penfill/pen, วิธีใช้ ก่อนอาหาร/ก่อนนอน/ฉีดเอง) */
 WITH cfg AS (
@@ -202,7 +204,7 @@ WITH cfg AS (
          ARRAY[]::text[]            AS home_income, /* (ไม่บังคับ) opitemrece.income ของหมวดยากลับบ้าน ถ้า รพ. แยกไว้ */
          '^(Z3[456]|O24|Z131|Z3A)'::text AS preg_icd,  /* ICD10 ฝากครรภ์/คัดกรองเบาหวาน: visit นี้ glucose = ให้กินทดสอบ (GCT/OGTT) */
          ARRAY['30011']::text[]     AS preg_adp,    /* ADP ฝากครรภ์ใน visit เดียวกัน = glucose ให้กินทดสอบ */
-         ARRAY['55320','55810']::text[] AS neb_adp, /* ADP พ่นยา 55320 / ทำแผล 55810 (เพิ่มรหัสเย็บแผล ฯลฯ ได้): NSS/SWI ใน visit นี้ = ใช้พ่น/ล้างแผล ถ้าวิธีใช้ไม่ได้บอก IV */
+         ARRAY['55320','55810','55811','55812','55210']::text[] AS neb_adp, /* ADP พ่นยา 55320 / ทำแผล 55810-55812 / ล้างตา 55210 (เพิ่มรหัสได้): NSS/SWI ใน visit นี้ = ใช้พ่น/ล้างแผล ถ้าวิธีใช้ไม่ได้บอก IV */
          60                         AS bring_days,  /* ย้อนดูการจ่ายยาฉีดกลับบ้านกี่วัน (หลักฐานนำยามาเอง) */
          '(มาฉีด|ฉีดยาต่อ|ฉีดต่อ|นำยามา|ยามาเอง|เอายามา|ถือยามา|ยาเดิม|ให้ยาต่อ|drip|นัดฉีด|ตามนัด|\mEPO\M|epoetin|eprex|hema|cef-?3|ceftriax)'::text AS bring_regex, /* คำใน CC */
          '^Z51[89]'::text           AS bring_icd,   /* ICD10 Z51.8/Z51.9 = อาจนำยามาเอง -> ไม่ตรวจกรณีค่าฉีดมากกว่ายา */
@@ -255,7 +257,7 @@ drug_cls AS (
          CASE
            WHEN oi.icode = ANY(cfg.home_icode)
              OR oi.income = ANY(cfg.home_income)
-             OR concat_ws(' ', d.name, d.units, d.dosageform) ~* '(penfill|flexpen|kwikpen|solostar|flextouch|\mpen\M|cartridge|ปากกา)'
+             OR concat_ws(' ', d.name, d.units, d.dosageform) ~* '(penfil|flexpen|kwikpen|solostar|flextouch|\mpen\M|cartridge|ปากกา|(insulin|mixtard|insulatard|actrapid|humulin|novomix|novorapid|lantus|levemir|humalog|toujeo|tresiba|apidra|glargine).*300 ?i?u)'
              OR u.t ~* '(กลับบ้าน|ฉีดเอง|ก่อนอาหาร|หลังอาหาร|ก่อนนอน|พร้อมอาหาร)'
                                                                                              THEN 'HOME'
            WHEN pg.vn IS NOT NULL
@@ -283,7 +285,9 @@ drug_cls AS (
                                                                                              THEN 'FLUID'
            WHEN d.name ~* '(\mNSS\M|0\.9 ?%|\mD5|\mD10|5 ?% ?D|\mLRS\M|ringer|acetar|sterofundin|\mD/N)'
                 AND COALESCE(d.units,'') !~* '(amp|vial)'                                   THEN 'UNK'
-           WHEN d.name ~* '(PCEC|rabies|rabipur|verorab|speeda|PVRV|พิษสุนัขบ้า)'
+           WHEN d.name ~* '(PCEC|rabi|verorab|speeda|PVRV|พิษสุนัขบ้า)'
+             OR (d.name ~* 'vac' AND EXISTS (SELECT 1 FROM ovstdiag dx WHERE dx.vn = oi.vn
+                                              AND replace(upper(dx.icd10), '.', '') ~ '^(Z242|Z203)'))
              OR u.t ~* '(\mID\M|intradermal|ในผิวหนัง)'                                      THEN 'FLEX'
            WHEN oi.qty > 1
             AND u.t ~* '(q *[0-9]+ *(mo|month|wk|week)|ทุก *[0-9]* *(เดือน|สัปดาห์|อาทิตย์)|เดือนละ|monthly|วันที่ *[0-9]+)'
@@ -338,10 +342,12 @@ ev AS (   /* หลักฐานว่าผู้ป่วยนำยาม�
                AND oi.vstdate >= vv.vstdate - cfg.bring_days AND oi.vstdate < vv.vstdate
                AND oi.qty >= 2
                AND (COALESCE(d.dosageform,'') ~* 'inj' OR d.name ~* '\minj' OR COALESCE(d.units,'') ~* '(amp|vial)')
-               AND concat_ws(' ', d.name, d.units) !~* '(penfill|flexpen|kwikpen|solostar|flextouch|\mpen\M|cartridge|ปากกา)')
+               AND concat_ws(' ', d.name, d.units) !~* '(penfil|flexpen|kwikpen|solostar|flextouch|\mpen\M|cartridge|ปากกา|(insulin|mixtard|insulatard|actrapid|humulin|novomix|novorapid|lantus|levemir|humalog|toujeo|tresiba|apidra|glargine).*300 ?i?u)')
          ), '')                                              AS bring_ev,
          EXISTS (SELECT 1 FROM ovstdiag dg
-                  WHERE dg.vn = p.vn AND replace(upper(dg.icd10), '.', '') ~ cfg.bring_icd) AS is_z51
+                  WHERE dg.vn = p.vn AND replace(upper(dg.icd10), '.', '') ~ cfg.bring_icd) AS is_z51,
+         NOT EXISTS (SELECT 1 FROM opitemrece o2 JOIN nondrugitems n2 ON n2.icode = o2.icode
+                      WHERE o2.vn = p.vn AND n2.nhso_adp_code = ANY(cfg.opd_fee))          AS no_opd
   FROM   proc p
   JOIN   v vv ON vv.vn = p.vn
   CROSS  JOIN cfg
@@ -367,7 +373,8 @@ agg AS (
          COALESCE(MAX(p.c_fluid),0)::int  AS c_fluid,
          string_agg(DISTINCT dc.route || ':' || dc.drug_name, ' | ') FILTER (WHERE dc.route NOT IN ('EXT','HOME')) AS drug_list,
          MAX(e.bring_ev)                                            AS bring_ev,
-         COALESCE(bool_or(e.is_z51), false)                         AS is_z51
+         COALESCE(bool_or(e.is_z51), false)                         AS is_z51,
+         COALESCE(bool_or(e.no_opd), false)                         AS no_opd
   FROM   v
   LEFT   JOIN drug_cls dc ON dc.vn = v.vn
   LEFT   JOIN proc     p  ON p.vn  = v.vn
@@ -389,12 +396,14 @@ s0 AS (
 s AS (
   SELECT s0.*,
          (n_item > 0 AND n_chg = 0)                          AS miss_all,
-         NOT is_z51 AND ((n_chg > n_item + d_depot + 2 * d_flex + d_dil)
+         NOT is_z51 AND NOT (no_opd AND n_item + d_loc + d_flex + d_depot + d_dil + d_adj = 0)
+           AND ((n_chg > n_item + d_depot + 2 * d_flex + d_dil)
            OR (d_flex > 0 AND n_chg + c_loc > n_item + d_loc + d_depot + 2 * d_flex + d_dil + d_adj)) AS over_all,
          (d_flex > 0 AND n_chg + c_loc = 0)                  AS miss_flex,
          (cfg.check_qty AND n_chg > 0 AND n_chg < n_item)    AS qty_low,
          (d_loc > 0 AND c_loc = 0)                           AS miss_proc,
-         NOT is_z51 AND (c_loc > d_loc + 2 * d_flex + d_adj) AS over_proc,
+         NOT is_z51 AND NOT (no_opd AND n_item + d_loc + d_flex + d_depot + d_dil + d_adj = 0)
+           AND (c_loc > d_loc + 2 * d_flex + d_adj)          AS over_proc,
          (n_chg + c_loc BETWEEN n_item + d_loc AND n_item + d_loc + d_depot + 2 * d_flex + d_dil + d_adj) AS total_equal
   FROM   s0 CROSS JOIN cfg
 ),
@@ -419,15 +428,16 @@ inj_out AS (
                   CASE WHEN d_fluid > 0 THEN 'สารน้ำ 55820' END,
                   CASE WHEN d_iv    > 0 THEN 'IV 55822'     END,
                   CASE WHEN d_im    > 0 THEN 'IM 55823'     END,
-                  CASE WHEN d_sc    > 0 THEN 'SC 55824'     END,
+                  CASE WHEN d_sc    > 0 THEN 'SC/ID 55824'  END,
                   CASE WHEN d_unk   > 0 THEN 'ตามวิธีให้จริง' END) END,
            CASE WHEN qty_low  THEN 'ค่าฉีด ' || n_chg || ' < ยา ' || n_item || ' (ถ้าไม่ได้ผสม drip อาจขาด ' || (n_item - n_chg) || ')' END,
            CASE WHEN miss_proc THEN 'เข้าข้อ 71711 หรือ intralesion 71820 x' || d_loc || ' (ตามที่ฉีดจริง)' END,
-           CASE WHEN miss_flex THEN 'วัคซีนพิษสุนัขบ้า/ยา ID: IM 55823 x1 (IM 1 จุด) หรือค่าหัตถการ ID 2 จุด ตามที่ฉีดจริง' END
+           CASE WHEN miss_flex THEN 'วัคซีนพิษสุนัขบ้า/ยา ID: IM 55823 x1 (IM 1 จุด) หรือ ID 55824 x2 (ID 2 จุด) ตามที่ฉีดจริง' END
          ) END                                                               AS inj_add,
          CASE WHEN r.status = 'ตรวจวิธีใช้' THEN '' ELSE
          concat_ws(', ',
-           CASE WHEN over_all  THEN 'ค่าฉีด/สารน้ำ ' || n_chg || ' > ยา ' || n_item || ' เกิน ' || (n_chg - n_item) END,
+           CASE WHEN over_all  THEN 'ค่าฉีด/สารน้ำ ' || n_chg || ' > ที่ควรมีได้สูงสุด ' || (n_item + d_depot + 2 * d_flex + d_dil)
+                                   || ' เกิน ' || (n_chg - (n_item + d_depot + 2 * d_flex + d_dil)) END,
            CASE WHEN over_proc THEN 'ค่าเข้าข้อ/intralesion ' || c_loc || ' > ยา ' || d_loc || ' เกิน ' || (c_loc - d_loc) END
          ) END                                                               AS inj_remove,
          'ยา ' || (n_item + d_loc + d_flex) || ' / ค่าฉีด ' || (n_chg + c_loc) || '  [' || concat_ws(' ',
