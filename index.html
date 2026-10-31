@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUDIT เวชระเบียน ผู้ป่วยนอกสิทธิเบิกได้ / อปท.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#fff; --ink:#1c2733; --muted:#5d6b7a; --line:#dde3ea;
+    --brand:#0f6e6e; --brand-2:#e6f3f3; --warn:#b5651d; --bad:#b3261e; --ok:#2e7d32; --info:#3557a5;
+    --code-bg:#0f1720; --code-ink:#d7e1ea;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Thai",system-ui,sans-serif;font-size:15px;line-height:1.6}
+  header.top{background:var(--brand);color:#fff;padding:22px 20px 18px}
+  header.top .wrap{max-width:1180px;margin:0 auto}
+  header.top h1{margin:0;font-size:22px;font-weight:700;letter-spacing:.2px}
+  header.top p{margin:4px 0 0;opacity:.88;font-size:14px}
+  main{max-width:1180px;margin:0 auto;padding:18px 16px 40px}
+  .grid{display:grid;grid-template-columns:400px 1fr;gap:16px;align-items:start}
+  @media (max-width:960px){.grid{grid-template-columns:1fr}}
+  .grid>*{min-width:0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card h2{margin:0 0 10px;font-size:16px;font-weight:600;color:var(--brand)}
+  .card h3{margin:16px 0 6px;font-size:14px;font-weight:600}
+  label{display:block;font-size:13px;font-weight:500;margin:10px 0 4px}
+  .hint{font-size:12px;color:var(--muted);margin-top:3px}
+  input[type=text],input[type=date],input[type=number]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:14px;background:#fbfcfd}
+  input:focus{outline:2px solid #9fd3d3;border-color:var(--brand)}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:#fff;padding:5px 10px;font-size:13px;color:var(--ink)}
+  button:hover{border-color:var(--brand);color:var(--brand)}
+  button.primary{background:var(--brand);color:#fff;border-color:var(--brand);font-weight:600;padding:8px 16px;font-size:14px}
+  button.primary:hover{background:#0b5858;color:#fff}
+  .checks{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px}
+  .checks label{display:flex;align-items:center;gap:6px;margin:0;font-weight:400;font-size:14px}
+  details{margin-top:12px;border-top:1px dashed var(--line);padding-top:8px}
+  summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)}
+  .err{color:var(--bad);font-size:13px;margin-top:8px;min-height:1em}
+  .codehead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .codehead .meta{font-size:13px;color:var(--muted)}
+  pre.sql{margin:0;background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;overflow:auto;max-height:640px;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px;line-height:1.55;white-space:pre}
+  pre.sql .cfg{background:rgba(94,200,200,.14);display:block;border-left:3px solid #5ec8c8;margin-left:-16px;padding-left:13px}
+  .toast{font-size:13px;color:var(--ok);font-weight:600}
+  .steps{margin:0;padding-left:20px}
+  .steps li{margin:3px 0}
+  table.legend{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.legend th,table.legend td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+  table.legend th{font-weight:600;background:#f7f9fb;font-size:13px;color:var(--muted)}
+  .pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap}
+  .p1{background:#fde7e5;color:var(--bad)} .p2{background:#fdeedd;color:var(--warn)} .p3{background:#e6ecfa;color:var(--info)}
+  .p4{background:#efe9f8;color:#6a3fa0} .p5{background:#e7f4e8;color:var(--ok)} .p6{background:#eef1f4;color:#4a5866}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  @media (max-width:960px){.two{grid-template-columns:1fr}}
+  ul.rules{margin:0;padding-left:18px;font-size:13.5px}
+  ul.rules li{margin:4px 0}
+  code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px;background:#eef2f5;padding:0 4px;border-radius:4px}
+  footer{max-width:1180px;margin:0 auto;padding:18px 16px 30px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);font-weight:600;text-decoration:none}
+  footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <h1>AUDIT เวชระเบียน ผู้ป่วยนอกสิทธิเบิกได้ / อปท.</h1>
+  <p>SQL สำหรับ HOSxP XE (PostgreSQL) หา visit ที่คีย์ค่าฉีด/ค่าให้สารน้ำไม่ครบหรือเกิน และหัตถการ/อุปกรณ์ที่ต้องคีย์คู่กัน (เฝือก, pap smear, พ่นยา, ใส่ท่อ, high alert drug, CPR) เพื่อให้งานประกันแก้ไขก่อนส่งเบิก</p>
+</div></header>
+
+<main>
+  <section class="card">
+      <div class="codehead">
+        <div>
+          <h2 style="margin:0">SQL สำหรับ HOSxP XE</h2>
+          <div class="meta" id="meta"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="toast" id="toast"></span>
+          <button type="button" class="primary" id="copyBtn">คัดลอก SQL</button>
+        </div>
+      </div>
+      <pre class="sql" id="sqlOut"></pre>
+      <div class="hint" style="margin-top:8px">กดคัดลอกแล้ววางในหน้าต่าง SQL Query ของ HOSxP รันทั้งก้อน · 1 แถว = 1 visit ที่มีปัญหา · ส่งออก Excel ได้ตามปกติ</div>
+  </section>
+
+  <div class="two">
+    <section class="card">
+      <h2>สถานะในผลลัพธ์ (เรียงตามความสำคัญ)</h2>
+      <div class="hint" style="margin:-4px 0 8px">คอลัมน์ <code>category</code> บอกว่าแถวนี้มาจากส่วนไหน: ยาฉีด/สารน้ำ และ/หรือ กลุ่มกฎส่วนที่ 2 (เฝือก, ตรวจภายใน, พ่นยา ฯลฯ) · ถ้าผิดกฎส่วนที่ 2 จะนับเป็น คีย์ไม่ครบ</div>
+      <table class="legend">
+        <tr><th style="width:120px">status</th><th>ความหมาย / สิ่งที่ต้องทำ</th></tr>
+        <tr><td><span class="pill p1">ไม่ครบ+เกิน</span></td><td>บางกลุ่มขาด บางกลุ่มเกิน ดูคอลัมน์ need_add และ need_check_remove</td></tr>
+        <tr><td><span class="pill p2">คีย์ไม่ครบ</span></td><td>มียาฉีด/สารน้ำ แต่ไม่มีค่าฉีดหรือค่าให้สารน้ำ (หรือไม่มีค่าเข้าข้อ/IL) → เพิ่มตาม need_add</td></tr>
+        <tr><td><span class="pill p3">คีย์เกิน</span></td><td>ค่าฉีด/สารน้ำมากกว่าจำนวนยา → ตรวจและตัดตาม need_check_remove</td></tr>
+        <tr><td><span class="pill p4">ตรวจจำนวน</span></td><td>ค่าฉีดน้อยกว่าจำนวนยา (ขึ้นเฉพาะเมื่อเปิด check_qty) ถ้าไม่ได้ผสม drip อาจขาด</td></tr>
+        <tr><td><span class="pill p5">ตรวจวิธีใช้</span></td><td>จำนวนรวมครบ แต่กลุ่มไม่ตรง เช่น วิธีใช้ IM แต่คีย์ 71820 → แก้วิธีใช้ในใบสั่งยาให้ตรงที่ให้จริง</td></tr>
+        <tr><td><span class="pill p6">นำยามาเอง?</span></td><td>มีค่าฉีดแต่ไม่มียาใน visit และมีหลักฐาน (CC หรือเคยจ่ายยาฉีด ≥2 หน่วยใน N วันก่อน) → ตรวจก่อนตัด</td></tr>
+      </table>
+
+      <h3>คอลัมน์ผลลัพธ์</h3>
+      <ul class="rules">
+        <li><code>need_add</code> รหัสที่ควรเพิ่ม (ยาฉีด + กฎส่วนที่ 2 คั่นด้วย |) · <code>need_check_remove</code> รายการที่ควรตรวจ/ตัด</li>
+        <li><code>drug_vs_charge</code> จำนวนยา / จำนวนค่าฉีด แยกกลุ่ม เช่น <code>IV 2/1</code> = ยา IV 2 รายการ คีย์ค่าฉีด IV 1</li>
+        <li><code>route_note</code> คีย์ผิดกลุ่ม เช่น ยา IV แต่คีย์ค่าฉีด IM</li>
+        <li><code>bring_evidence</code> หลักฐานนำยามาเอง · <code>drug_list</code> ยาที่นับ พร้อมกลุ่มที่ระบบจัด</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>ส่วนที่ 1: หลักการเทียบยาฉีด/สารน้ำ</h2>
+      <ul class="rules">
+        <li>เทียบแบบรวม: ยาฉีด IV/IM/SC + สารน้ำ เทียบกับค่าฉีด 55822/55823/55824 + ค่าให้สารน้ำ 55820 (ไม่สน route ที่คีย์ กันกรณี tramadol สั่ง IV แต่วิธีใช้ default IM)</li>
+        <li>ฉีดเข้าข้อ 71711 + intralesion 71820 เทียบรวมเป็นกลุ่มหัตถการ · RIG ฉีดรอบแผลนับเป็น intralesion</li>
+        <li>ยาฉีดจ่ายล่วงหน้ารายเดือน (qty &gt; 1, q 1 mo / ทุกเดือน) ไม่บังคับมีค่าฉีด แต่มีก็ไม่นับเกิน</li>
+        <li>วัคซีนพิษสุนัขบ้า/ยา ID: ยอมรับค่าฉีดกลุ่มใดก็ได้ สูงสุด 2 รายการต่อยา</li>
+        <li>NSS/D5/SWI ขนาดเล็ก (≤100 ml, amp/vial) หรือวิธีใช้ผสม/ละลายยา = ตัวทำละลาย ไม่ต้องมีค่าฉีด</li>
+        <li>ยาชา (lidocaine, bupivacaine ฯลฯ) = ยาประกอบหัตถการ ไม่ต้องมีค่าฉีดของตัวเอง</li>
+        <li>NSS/SWI ใน visit ที่มีพ่นยา/ทำแผล หรือวิธีใช้ ≤20 ml = ไม่ใช่สารน้ำ</li>
+        <li>มี ICD10 Z51.8/Z51.9 ไม่ตรวจกรณีค่าฉีดมากกว่ายา แต่ยังตรวจกรณีขาด</li>
+        <li>ตัดออก: ยาใช้ภายนอก, glucose กินทดสอบในฝากครรภ์, ยาฉีดกลับบ้าน (insulin pen, วิธีใช้ก่อนอาหาร/ฉีดเอง)</li>
+        <li>เฉพาะ OPD (ไม่มี AN)</li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:16px">
+    <h2>ส่วนที่ 2: กฎ “ถ้ามี A ต้องมี B”</h2>
+    <table class="legend">
+      <tr><th style="width:60px">กฎ</th><th style="width:150px">กลุ่ม</th><th>ถ้ามีรหัส (A)</th><th>ต้องมีอย่างน้อย 1 รหัส (B)</th></tr>
+      <tr><td>A1</td><td>เฝือก</td><td>เฝือกแขน 71730–71737, 71750–71752, 71763, 71772</td><td>arm sling 8602</td></tr>
+      <tr><td>A2</td><td>เฝือก</td><td>เฝือกขา 71738–71743, 71753–71755, 71757, 71774, 71775</td><td>อุปกรณ์ช่วยเดิน 8701/8702/8703/8704/8711</td></tr>
+      <tr><td>A3</td><td>เฝือก</td><td>เฝือกขา (ชุดเดียวกับ A2)</td><td>ambulation training 56111</td></tr>
+      <tr><td>B1</td><td>ตรวจภายใน</td><td>pap smear 38302, 1B004N, 1B004P</td><td>ตรวจภายใน 55620</td></tr>
+      <tr><td>B2</td><td>ตรวจทวาร</td><td>proctoscope 71550</td><td>PR 55520</td></tr>
+      <tr><td>C1</td><td>พ่นยา</td><td>ยาพ่น nebulizer Berodual/Salbutamol/Ventolin (ชนิด ml/solution)</td><td>พ่นยา 55320</td></tr>
+      <tr><td>D1</td><td>ใส่ท่อช่วยหายใจ</td><td>ท่อ ETT 3001/3002 หรือใส่ท่อ 71310</td><td>suction 55311</td></tr>
+      <tr><td>D2</td><td>ใส่ท่อช่วยหายใจ</td><td>ท่อ ETT 3001/3002 หรือใส่ท่อ 71310</td><td>clear airway 55310</td></tr>
+      <tr><td>D3</td><td>ใส่ท่อช่วยหายใจ</td><td>ท่อ ETT 3001/3002</td><td>ค่าใส่ท่อ 71310</td></tr>
+      <tr><td>D4</td><td>ใส่ท่อช่วยหายใจ</td><td>ใส่ท่อ 71310</td><td>ท่อช่วยหายใจ 3001/3002</td></tr>
+      <tr><td>E1</td><td>high alert drug</td><td>norepinephrine (Levophed), streptokinase</td><td>infusion pump 52910</td></tr>
+      <tr><td>F1</td><td>CPR</td><td>CPR 71011</td><td>AED pad 4511</td></tr>
+    </table>
+  </section>
+</main>
+
+<footer>
+  ออกแบบและพัฒนาโดย นายแพทย์กุลพล ตั้งรัตนาพิบูล<br>
+  นายแพทย์ชำนาญการ (ด้านเวชกรรม)<br>
+  ปฏิบัติหน้าที่ผู้อำนวยการ<a href="https://www.songkwaehospital.com/" target="_blank" rel="noopener">โรงพยาบาลสองแคว</a> อำเภอสองแคว จังหวัดน่าน
+</footer>
+
+<script type="text/plain" id="sqlCode">/* Worklist audit OPD สิทธิ OFC/LGO : แก้ช่วงวันที่ในบล็อก cfg แล้วรันทั้งก้อน  (1 แถว = 1 visit ที่มีปัญหา)
+   ส่วนที่ 1 ยาฉีด/สารน้ำ  |  ส่วนที่ 2 กฎ ถ้ามี A ต้องมี B (เฝือก, pap smear, proctoscope, พ่นยา, ใส่ท่อ, high alert drug, CPR)
+   เพิ่ม/แก้กฎส่วนที่ 2 ได้ที่ CTE rules: trig = มีรหัสใดรหัสหนึ่ง, req = ต้องมีอย่างน้อย 1 รหัส (ADP code หรือแท็ก DRUG:xxx)
+   ===== ส่วนที่ 1 ยาฉีด/สารน้ำ =====
+   วิธีเทียบแบบรวม: ยาฉีด IV/IM/SC + สารน้ำ (รวมกัน) เทียบกับ ค่าฉีด 55822/55823/55824 + ค่าให้สารน้ำ 55820 (รวมกัน)
+   ไม่สนว่าคีย์ route ไหน (กันปัญหา tramadol สั่ง IV แต่วิธีใช้ default เป็น IM และยา drip ที่คิดเป็นค่าให้สารน้ำแล้ว)
+   ฉีดเข้าข้อ 71711 + intralesion 71820 เทียบรวมเป็นกลุ่มหัตถการ (TA ใช้ได้ทั้งสองแบบ วิธีใช้มักไม่ถูกแก้)
+   ถ้าจำนวนยาทั้งหมดเท่ากับจำนวนค่าฉีดทั้งหมด แต่กลุ่มไม่ตรง (เช่น วิธีใช้ IM แต่คีย์ 71820) -> สถานะ ตรวจวิธีใช้ ไม่นับว่าขาด/เกิน
+   ยาฉีดที่จ่ายล่วงหน้าเป็นรอบ (qty > 1 และวิธีใช้ q 1 mo / ทุกเดือน / วันที่ N เช่น haloperidol decanoate) ไม่บังคับต้องมีค่าฉีดวันนั้น
+     แต่ถ้ามีค่าฉีดก็ไม่นับว่าเกิน (อาจฉีดเข็มแรกวันนั้น)
+   วัคซีนพิษสุนัขบ้า (PCEC ฯลฯ) และยาที่วิธีใช้เป็น ID: ฉีด IM 1 จุด หรือ ID 2 จุด -> ยอมรับค่าฉีดกลุ่มใดก็ได้ สูงสุด 2 รายการต่อยา
+   NSS/D5/SWI ขนาดเล็ก (<=100 ml, amp/vial) หรือวิธีใช้ ผสม/ละลายยา = ตัวทำละลาย ไม่ต้องมีค่าฉีด (ถ้ามีค่าให้สารน้ำ 1 รายการก็ไม่นับเกิน)
+   ยาชา (lidocaine/xylocaine/bupivacaine ฯลฯ) = ยาผสม/ยาประกอบหัตถการ ไม่ต้องมีค่าฉีดของตัวเอง
+     (ถ้ามีแค่ยาชาแล้วคีย์ 71711/71820 1 รายการ เช่น trigger point injection ก็ไม่นับเกิน)
+   NSS/SWI ใน visit ที่มีค่าพ่นยา (ADP 55320) หรือทำแผล (55810) หรือวิธีใช้ระบุปริมาณน้อย (<=20 ml เช่น NSS 4 ml) = ไม่ใช่สารน้ำ
+   มีค่าฉีดแต่ไม่มียาใน visit (ผู้ป่วยนำยามาเองจากบ้าน/รพ.อื่น เช่น EPO, ceftriaxone OD) -> ถ้ามีหลักฐานจะขึ้นสถานะ นำยามาเอง?
+     แทน คีย์เกิน หลักฐาน = CC มีคำ มาฉีด/นำยามา/drip/EPO ฯลฯ หรือเคยจ่ายยาฉีด >= 2 หน่วยใน 60 วันก่อน
+     ถ้ามี ICD10 Z51.8 / Z51.9 ไม่ตรวจกรณีค่าฉีดมากกว่ายาเลย (ไม่แสดงในรายการ) แต่ยังตรวจกรณีขาด
+   RIG ฉีดรอบแผล (infiltrate) นับเป็นกลุ่ม intralesion
+   ตัดออกไม่ตรวจ: ยาใช้ภายนอก (ล้างจมูก/ล้างแผล/พ่น), ยารับประทาน (glucose ใน visit ฝากครรภ์: ICD10 Z34/Z35/Z36/O24/Z13.1 หรือมี ADP 30011, หรือวิธีใช้เป็นกิน/ดื่ม) และยาฉีดกลับบ้าน (insulin penfill/pen, วิธีใช้ ก่อนอาหาร/ก่อนนอน/ฉีดเอง) */
+WITH cfg AS (
+  SELECT DATE '2025-10-01'          AS d1,          /* วันที่เริ่ม */
+         DATE '2026-10-31'          AS d2,          /* วันที่สิ้นสุด */
+         ARRAY['OFC','LGO']::text[] AS hip,         /* pttype.hipdata_code */
+         ARRAY['55820']::text[]     AS fluid_adp,   /* ADP ค่าให้สารน้ำ 55820 */
+         ARRAY[]::text[]            AS fluid_icode, /* (ไม่บังคับ) icode ค่าให้สารน้ำที่ยังไม่ได้ผูก ADP 55820 */
+         ARRAY[]::text[]            AS ext_icode,   /* icode ยาที่ไม่ใช่ให้ทางหลอดเลือดเสมอ เช่น NSS for irrigation */
+         ARRAY[]::text[]            AS home_icode,  /* icode ยาฉีดกลับบ้านที่ต้องการตัดออกเพิ่ม เช่น enoxaparin กลับบ้าน */
+         ARRAY[]::text[]            AS home_income, /* (ไม่บังคับ) opitemrece.income ของหมวดยากลับบ้าน ถ้า รพ. แยกไว้ */
+         '^(Z3[456]|O24|Z131|Z3A)'::text AS preg_icd,  /* ICD10 ฝากครรภ์/คัดกรองเบาหวาน: visit นี้ glucose = ให้กินทดสอบ (GCT/OGTT) */
+         ARRAY['30011']::text[]     AS preg_adp,    /* ADP ฝากครรภ์ใน visit เดียวกัน = glucose ให้กินทดสอบ */
+         ARRAY['55320','55810']::text[] AS neb_adp, /* ADP พ่นยา 55320 / ทำแผล 55810 (เพิ่มรหัสเย็บแผล ฯลฯ ได้): NSS/SWI ใน visit นี้ = ใช้พ่น/ล้างแผล ถ้าวิธีใช้ไม่ได้บอก IV */
+         60                         AS bring_days,  /* ย้อนดูการจ่ายยาฉีดกลับบ้านกี่วัน (หลักฐานนำยามาเอง) */
+         '(มาฉีด|ฉีดยาต่อ|ฉีดต่อ|นำยามา|ยามาเอง|เอายามา|ถือยามา|ยาเดิม|ให้ยาต่อ|drip|นัดฉีด|ตามนัด|\mEPO\M|epoetin|eprex|hema|cef-?3|ceftriax)'::text AS bring_regex, /* คำใน CC */
+         '^Z51[89]'::text           AS bring_icd,   /* ICD10 Z51.8/Z51.9 = อาจนำยามาเอง -> ไม่ตรวจกรณีค่าฉีดมากกว่ายา */
+         '(berodual|salbutamol|ventolin)'::text AS neb_drug_regex, /* ยาพ่นแบบ nebulizer (คิดต่อ ml) ต้องมี 55320 */
+         '(norepinephrine|levophed|streptokinase)'::text AS had_regex, /* high alert drug ต้องมี infusion pump 52910 (เพิ่มชื่อยาได้) */
+         false                      AS check_qty    /* true = เตือนเมื่อจำนวนค่าฉีดน้อยกว่าจำนวนยา (ยา drip อาจเตือนเกิน) */
+),
+v AS (
+  SELECT o.vn, o.hn, o.vstdate, o.main_dep, p.name AS pttype_name, p.hipdata_code
+  FROM   ovst o
+  JOIN   pttype p ON p.pttype = o.pttype
+  CROSS  JOIN cfg
+  WHERE  o.vstdate BETWEEN cfg.d1 AND cfg.d2
+    AND  p.hipdata_code = ANY(cfg.hip)
+    AND  COALESCE(o.an,'') = ''
+),
+preg AS (
+  SELECT DISTINCT dg.vn
+  FROM   ovstdiag dg
+  JOIN   v ON v.vn = dg.vn
+  CROSS  JOIN cfg
+  WHERE  replace(upper(dg.icd10), '.', '') ~ cfg.preg_icd
+  UNION
+  SELECT oi.vn
+  FROM   opitemrece oi
+  JOIN   v ON v.vn = oi.vn
+  JOIN   nondrugitems n ON n.icode = oi.icode
+  CROSS  JOIN cfg
+  WHERE  n.nhso_adp_code = ANY(cfg.preg_adp)
+),
+neb AS (
+  SELECT DISTINCT oi.vn
+  FROM   opitemrece oi
+  JOIN   v ON v.vn = oi.vn
+  JOIN   nondrugitems n ON n.icode = oi.icode
+  CROSS  JOIN cfg
+  WHERE  n.nhso_adp_code = ANY(cfg.neb_adp)
+),
+drug_cls AS (
+  SELECT oi.vn, oi.icode, d.name AS drug_name,
+         CASE
+           WHEN oi.icode = ANY(cfg.home_icode)
+             OR oi.income = ANY(cfg.home_income)
+             OR concat_ws(' ', d.name, d.units, d.dosageform) ~* '(penfill|flexpen|kwikpen|solostar|flextouch|\mpen\M|cartridge|ปากกา)'
+             OR u.t ~* '(กลับบ้าน|ฉีดเอง|ก่อนอาหาร|หลังอาหาร|ก่อนนอน|พร้อมอาหาร)'
+                                                                                             THEN 'HOME'
+           WHEN pg.vn IS NOT NULL
+            AND d.name ~* '(glucose|dextrose|\mD50|\mD-50)'
+            AND COALESCE(d.units,'') !~* '(bag|bot)'                                          THEN 'EXT'
+           WHEN nb.vn IS NOT NULL
+            AND d.name ~* '(\mNSS\M|0\.9 ?%|\mNaCl\M|sterile water|\mSWI\M|water for inj)'
+            AND u.t !~* '(\mIV\M|i\.v\.|\mIVD\M|intravenous|หลอดเลือดดำ|drip|หยด|ml */ *(hr|h|ชม))' THEN 'EXT'
+           WHEN oi.icode = ANY(cfg.ext_icode)
+             OR concat_ws(' ', u.t, d.name, d.dosageform)
+                ~* '(ล้าง|irrigat|nasal|จมูก|ทาแผล|ใส่แผล|ภายนอก|external|topical|พ่น|nebul|เช็ด|หยอด|ชะ|บ้วน|กลั้วคอ|สวน|\mOGTT\M|\mGCT\M|oral)'
+             OR u.t ~* '(รับประทาน|กิน|ดื่ม|ละลายน้ำ|\mPO\M|ทดสอบน้ำตาล)'
+                                                                                             THEN 'EXT'
+           WHEN d.name ~* '(lidocaine|xylocaine|lignocaine|bupivacaine|marcaine|mepivacaine|ropivacaine)'
+                                                                                             THEN 'ADJ'
+           WHEN (d.name ~* '(\mNSS\M|0\.9 ?%|\mNaCl\M|\mD5|\mD10|5 ?% ?D|sterile water|\mSWI\M|water for inj)')
+            AND (d.name ~* '(^|[^0-9])(2|5|10|20|50|100) ?(ml|cc)'
+                 OR COALESCE(d.units,'') ~* '(amp|vial)'
+                 OR d.name ~* '(sterile water|\mSWI\M|water for inj)'
+                 OR u.t ~* '(ผสม|dilut|mix|ละลายยา|reconstitut|เจือจาง)'
+                 OR (u.t ~* '(^|[^0-9.])([1-9]|1[0-9]|20)(\.[0-9]+)? ?(ml|cc)' AND u.t !~* '(ml|cc) */ *(hr|h|ชม)'))                    THEN 'DILUENT'
+           WHEN d.name ~* '(\mNSS\M|0\.9 ?%|\mD5|\mD10|5 ?% ?D|\mLRS\M|ringer|acetar|sterofundin|\mD/N)'
+                AND COALESCE(d.units,'') !~* '(amp|vial)'
+                AND u.t ~* '(\mIV\M|i\.v\.|\mIVD\M|intravenous|หลอดเลือดดำ|drip|หยด|ml */ *(hr|ชม)|cc */ *(hr|ชม)|rate|load)'
+                                                                                             THEN 'FLUID'
+           WHEN d.name ~* '(\mNSS\M|0\.9 ?%|\mD5|\mD10|5 ?% ?D|\mLRS\M|ringer|acetar|sterofundin|\mD/N)'
+                AND COALESCE(d.units,'') !~* '(amp|vial)'                                   THEN 'UNK'
+           WHEN d.name ~* '(PCEC|rabies|rabipur|verorab|speeda|PVRV|พิษสุนัขบ้า)'
+             OR u.t ~* '(\mID\M|intradermal|ในผิวหนัง)'                                      THEN 'FLEX'
+           WHEN oi.qty > 1
+            AND u.t ~* '(q *[0-9]+ *(mo|month|wk|week)|ทุก *[0-9]* *(เดือน|สัปดาห์|อาทิตย์)|เดือนละ|monthly|วันที่ *[0-9]+)'
+                                                                                             THEN 'DEPOT'
+           WHEN u.t ~* '(intra-?articular|เข้าข้อ|\mIA\M)'                                   THEN 'JOINT'
+           WHEN u.t ~* '(intra-?lesion|รอยโรค|\mIL\M|รอบแผล|infiltrat)'                                       THEN 'LESION'
+           WHEN u.t ~* '(\mIV\M|i\.v\.|\mIVD\M|intravenous|หลอดเลือดดำ|drip|push)'           THEN 'IV'
+           WHEN u.t ~* '(\mIM\M|i\.m\.|intramuscular|กล้าม)'                                 THEN 'IM'
+           WHEN u.t ~* '(\mSC\M|s\.c\.|subcut|ใต้ผิวหนัง)'                                   THEN 'SC'
+           ELSE 'UNK'
+         END AS route
+  FROM   opitemrece oi
+  JOIN   v ON v.vn = oi.vn
+  JOIN   drugitems d ON d.icode = oi.icode
+  LEFT   JOIN drugusage du ON du.drugusage = oi.drugusage
+  LEFT   JOIN sp_use    su ON su.sp_use    = oi.sp_use
+  LEFT   JOIN preg      pg ON pg.vn        = oi.vn
+  LEFT   JOIN neb       nb ON nb.vn        = oi.vn
+  CROSS  JOIN LATERAL (SELECT concat_ws(' ', du.code, du.name1, du.name2, su.name1) AS t) u
+  CROSS  JOIN cfg
+  WHERE  oi.qty > 0
+    AND (COALESCE(d.dosageform,'') ~* 'inj'
+         OR d.name ~* '(\minj|\mNSS\M|\mLRS\M|ringer|acetar|\mD5|\mD10|sterofundin)'
+         OR COALESCE(d.units,'') ~* '(amp|vial|bag)')
+),
+proc AS (
+  SELECT oi.vn,
+         SUM(oi.qty) FILTER (WHERE n.nhso_adp_code = '55822') AS c_iv,
+         SUM(oi.qty) FILTER (WHERE n.nhso_adp_code = '55823') AS c_im,
+         SUM(oi.qty) FILTER (WHERE n.nhso_adp_code = '55824') AS c_sc,
+         SUM(oi.qty) FILTER (WHERE n.nhso_adp_code = '71711') AS c_joint,
+         SUM(oi.qty) FILTER (WHERE n.nhso_adp_code = '71820') AS c_lesion,
+         SUM(oi.qty) FILTER (WHERE n.nhso_adp_code = ANY(cfg.fluid_adp)
+                                OR oi.icode = ANY(cfg.fluid_icode))  AS c_fluid
+  FROM   opitemrece oi
+  JOIN   v ON v.vn = oi.vn
+  JOIN   nondrugitems n ON n.icode = oi.icode
+  CROSS  JOIN cfg
+  WHERE  n.nhso_adp_code IN ('55822','55823','55824','71711','71820')
+     OR  n.nhso_adp_code = ANY(cfg.fluid_adp)
+     OR  oi.icode = ANY(cfg.fluid_icode)
+  GROUP  BY oi.vn
+),
+ev AS (   /* หลักฐานว่าผู้ป่วยนำยามาเอง: ใช้กับ visit ที่มีค่าฉีดเท่านั้น */
+  SELECT p.vn,
+         NULLIF(concat_ws(' ; ',
+           (SELECT 'CC: ' || left(sc.cc, 80) FROM opdscreen sc
+             WHERE sc.vn = p.vn AND sc.cc ~* cfg.bring_regex LIMIT 1),
+           (SELECT 'เคยจ่าย ' || string_agg(DISTINCT d.name || ' x' || oi.qty::int || ' (' || to_char(oi.vstdate, 'DD/MM/YY') || ')', ', ')
+              FROM opitemrece oi JOIN drugitems d ON d.icode = oi.icode
+             WHERE oi.hn = vv.hn
+               AND oi.vstdate >= vv.vstdate - cfg.bring_days AND oi.vstdate < vv.vstdate
+               AND oi.qty >= 2
+               AND (COALESCE(d.dosageform,'') ~* 'inj' OR d.name ~* '\minj' OR COALESCE(d.units,'') ~* '(amp|vial)')
+               AND concat_ws(' ', d.name, d.units) !~* '(penfill|flexpen|kwikpen|solostar|flextouch|\mpen\M|cartridge|ปากกา)')
+         ), '')                                              AS bring_ev,
+         EXISTS (SELECT 1 FROM ovstdiag dg
+                  WHERE dg.vn = p.vn AND replace(upper(dg.icd10), '.', '') ~ cfg.bring_icd) AS is_z51
+  FROM   proc p
+  JOIN   v vv ON vv.vn = p.vn
+  CROSS  JOIN cfg
+),
+agg AS (
+  SELECT v.vn, v.hn, v.vstdate, v.main_dep, v.pttype_name, v.hipdata_code,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='IV')     AS d_iv,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='IM')     AS d_im,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='SC')     AS d_sc,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='JOINT')  AS d_joint,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='LESION') AS d_lesion,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='FLUID')  AS d_fluid,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='UNK')    AS d_unk,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='DEPOT')  AS d_depot,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='FLEX')   AS d_flex,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='DILUENT') AS d_dil,
+         COUNT(DISTINCT dc.icode) FILTER (WHERE dc.route='ADJ')    AS d_adj,
+         COALESCE(MAX(p.c_iv),0)::int     AS c_iv,
+         COALESCE(MAX(p.c_im),0)::int     AS c_im,
+         COALESCE(MAX(p.c_sc),0)::int     AS c_sc,
+         COALESCE(MAX(p.c_joint),0)::int  AS c_joint,
+         COALESCE(MAX(p.c_lesion),0)::int AS c_lesion,
+         COALESCE(MAX(p.c_fluid),0)::int  AS c_fluid,
+         string_agg(DISTINCT dc.route || ':' || dc.drug_name, ' | ') FILTER (WHERE dc.route NOT IN ('EXT','HOME')) AS drug_list,
+         MAX(e.bring_ev)                                            AS bring_ev,
+         COALESCE(bool_or(e.is_z51), false)                         AS is_z51
+  FROM   v
+  LEFT   JOIN drug_cls dc ON dc.vn = v.vn
+  LEFT   JOIN proc     p  ON p.vn  = v.vn
+  LEFT   JOIN ev       e  ON e.vn  = v.vn
+  GROUP  BY v.vn, v.hn, v.vstdate, v.main_dep, v.pttype_name, v.hipdata_code
+),
+g AS (
+  SELECT a.*,
+         d_iv + d_im + d_sc + d_unk + d_fluid  AS n_item,
+         c_iv + c_im + c_sc + c_fluid          AS n_chg
+  FROM   agg a
+),
+s0 AS (
+  SELECT g.*,
+         d_joint + d_lesion                                  AS d_loc,
+         c_joint + c_lesion                                  AS c_loc
+  FROM   g
+),
+s AS (
+  SELECT s0.*,
+         (n_item > 0 AND n_chg = 0)                          AS miss_all,
+         NOT is_z51 AND ((n_chg > n_item + d_depot + 2 * d_flex + d_dil)
+           OR (d_flex > 0 AND n_chg + c_loc > n_item + d_loc + d_depot + 2 * d_flex + d_dil + d_adj)) AS over_all,
+         (d_flex > 0 AND n_chg + c_loc = 0)                  AS miss_flex,
+         (cfg.check_qty AND n_chg > 0 AND n_chg < n_item)    AS qty_low,
+         (d_loc > 0 AND c_loc = 0)                           AS miss_proc,
+         NOT is_z51 AND (c_loc > d_loc + 2 * d_flex + d_adj) AS over_proc,
+         (n_chg + c_loc BETWEEN n_item + d_loc AND n_item + d_loc + d_depot + 2 * d_flex + d_dil + d_adj) AS total_equal
+  FROM   s0 CROSS JOIN cfg
+),
+r AS (
+  SELECT s.*,
+         CASE WHEN NOT (miss_all OR over_all OR qty_low OR miss_proc OR over_proc OR miss_flex) THEN NULL
+              WHEN (miss_all OR miss_proc OR over_all OR over_proc) AND total_equal AND NOT miss_flex THEN 'ตรวจวิธีใช้'
+              WHEN (over_all OR over_proc) AND NOT (miss_all OR miss_proc OR miss_flex)
+                   AND bring_ev IS NOT NULL                                   THEN 'นำยามาเอง?'
+              WHEN (miss_all OR miss_proc OR miss_flex) AND (over_all OR over_proc) THEN 'ไม่ครบ+เกิน'
+              WHEN  miss_all OR miss_proc OR miss_flex                             THEN 'คีย์ไม่ครบ'
+              WHEN  over_all OR over_proc                                          THEN 'คีย์เกิน'
+              ELSE 'ตรวจจำนวน' END                            AS status
+  FROM   s
+),
+inj_out AS (
+  SELECT r.vn,
+         r.status                                    AS inj_status,
+         CASE WHEN r.status = 'ตรวจวิธีใช้' THEN 'จำนวนครบ แต่ค่าหัตถการไม่ตรงวิธีใช้ในใบสั่งยา ให้แก้วิธีใช้ให้ตรงที่ให้จริง' ELSE
+         concat_ws(', ',
+           CASE WHEN miss_all THEN 'ไม่มีค่าฉีด/ค่าให้สารน้ำเลย แนะนำ: ' || concat_ws(' + ',
+                  CASE WHEN d_fluid > 0 THEN 'สารน้ำ 55820' END,
+                  CASE WHEN d_iv    > 0 THEN 'IV 55822'     END,
+                  CASE WHEN d_im    > 0 THEN 'IM 55823'     END,
+                  CASE WHEN d_sc    > 0 THEN 'SC 55824'     END,
+                  CASE WHEN d_unk   > 0 THEN 'ตามวิธีให้จริง' END) END,
+           CASE WHEN qty_low  THEN 'ค่าฉีด ' || n_chg || ' < ยา ' || n_item || ' (ถ้าไม่ได้ผสม drip อาจขาด ' || (n_item - n_chg) || ')' END,
+           CASE WHEN miss_proc THEN 'เข้าข้อ 71711 หรือ intralesion 71820 x' || d_loc || ' (ตามที่ฉีดจริง)' END,
+           CASE WHEN miss_flex THEN 'วัคซีนพิษสุนัขบ้า/ยา ID: IM 55823 x1 (IM 1 จุด) หรือค่าหัตถการ ID 2 จุด ตามที่ฉีดจริง' END
+         ) END                                                               AS inj_add,
+         CASE WHEN r.status = 'ตรวจวิธีใช้' THEN '' ELSE
+         concat_ws(', ',
+           CASE WHEN over_all  THEN 'ค่าฉีด/สารน้ำ ' || n_chg || ' > ยา ' || n_item || ' เกิน ' || (n_chg - n_item) END,
+           CASE WHEN over_proc THEN 'ค่าเข้าข้อ/intralesion ' || c_loc || ' > ยา ' || d_loc || ' เกิน ' || (c_loc - d_loc) END
+         ) END                                                               AS inj_remove,
+         'ยา ' || (n_item + d_loc + d_flex) || ' / ค่าฉีด ' || (n_chg + c_loc) || '  [' || concat_ws(' ',
+           CASE WHEN d_iv+c_iv         > 0 THEN 'IV '    || d_iv     || '/' || c_iv     END,
+           CASE WHEN d_im+c_im         > 0 THEN 'IM '    || d_im     || '/' || c_im     END,
+           CASE WHEN d_sc+c_sc         > 0 THEN 'SC '    || d_sc     || '/' || c_sc     END,
+           CASE WHEN d_fluid+c_fluid   > 0 THEN 'Fluid ' || d_fluid  || '/' || c_fluid  END,
+           CASE WHEN d_unk             > 0 THEN 'ไม่ระบุroute ' || d_unk               END,
+           CASE WHEN d_depot           > 0 THEN 'จ่ายฉีดรายเดือน ' || d_depot          END,
+           CASE WHEN d_flex            > 0 THEN 'วัคซีนIM/ID ' || d_flex               END,
+           CASE WHEN d_dil             > 0 THEN 'ตัวทำละลาย ' || d_dil                 END,
+           CASE WHEN d_adj             > 0 THEN 'ยาชาผสม ' || d_adj                    END,
+           CASE WHEN d_joint+c_joint   > 0 THEN 'ข้อ '   || d_joint  || '/' || c_joint  END,
+           CASE WHEN d_lesion+c_lesion > 0 THEN 'IL '    || d_lesion || '/' || c_lesion END) || ']' AS drug_vs_charge,
+         concat_ws(', ',
+           CASE WHEN d_iv > 0 AND c_iv = 0 AND c_im > 0 THEN 'ยา IV แต่คีย์ค่าฉีด IM' END,
+           CASE WHEN d_im > 0 AND c_im = 0 AND c_iv > 0 THEN 'ยา IM แต่คีย์ค่าฉีด IV' END,
+           CASE WHEN d_joint  > 0 AND c_joint  = 0 AND c_lesion > 0 THEN 'วิธีใช้เข้าข้อ แต่คีย์ intralesion' END,
+           CASE WHEN d_lesion > 0 AND c_lesion = 0 AND c_joint  > 0 THEN 'วิธีใช้ intralesion แต่คีย์เข้าข้อ' END,
+           CASE WHEN d_loc > 0 AND c_loc = 0 AND n_chg > n_item THEN 'วิธีใช้เข้าข้อ/IL แต่คีย์ค่าฉีด IM/IV/SC' END,
+           CASE WHEN c_loc > d_loc AND n_item > n_chg THEN 'วิธีใช้ IM/IV/SC แต่คีย์เข้าข้อ/IL' END
+         )                                                                   AS route_note,
+         r.bring_ev                                  AS bring_evidence,
+         r.drug_list                                 AS drug_list
+  FROM   r
+  WHERE  r.status IS NOT NULL
+),
+vcode AS (   /* ===== ส่วนที่ 2: รหัส ADP ทั้งหมดใน visit + แท็กยา DRUG:NEB / DRUG:HAD ===== */
+  SELECT x.vn, array_agg(DISTINCT x.code) AS codes
+  FROM (
+    SELECT oi.vn, n.nhso_adp_code::text AS code
+    FROM   opitemrece oi
+    JOIN   v ON v.vn = oi.vn
+    JOIN   nondrugitems n ON n.icode = oi.icode
+    WHERE  COALESCE(n.nhso_adp_code,'') <> '' AND oi.qty > 0
+    UNION ALL
+    SELECT oi.vn, 'DRUG:NEB'
+    FROM   opitemrece oi
+    JOIN   v ON v.vn = oi.vn
+    JOIN   drugitems d ON d.icode = oi.icode
+    CROSS  JOIN cfg
+    WHERE  oi.qty > 0
+      AND  d.name ~* cfg.neb_drug_regex
+      AND  concat_ws(' ', d.name, d.units, d.dosageform) ~* '(\mml\M|\mcc\M|nebul|respule|solution|soln|\mneb)'
+      AND  concat_ws(' ', d.name, d.units, d.dosageform) !~* '(MDI|inhaler|evohaler|accuhaler|rotacap|puff|\mtab|syr|elixir|\minj)'
+    UNION ALL
+    SELECT oi.vn, 'DRUG:HAD'
+    FROM   opitemrece oi
+    JOIN   v ON v.vn = oi.vn
+    JOIN   drugitems d ON d.icode = oi.icode
+    CROSS  JOIN cfg
+    WHERE  oi.qty > 0 AND d.name ~* cfg.had_regex
+  ) x
+  GROUP  BY x.vn
+),
+rules (rule_id, grp, trig, req, label) AS (VALUES
+  ('A1','เฝือก',     ARRAY['71730','71731','71732','71733','71735','71736','71737','71750','71751','71752','71763','71772'],
+                     ARRAY['8602'],                             'เฝือกแขน: arm sling 8602'),
+  ('A2','เฝือก',     ARRAY['71738','71739','71740','71741','71742','71743','71753','71754','71755','71757','71774','71775'],
+                     ARRAY['8701','8702','8703','8704','8711'], 'เฝือกขา: อุปกรณ์ช่วยเดิน 8701/8702/8703/8704/8711'),
+  ('A3','เฝือก',     ARRAY['71738','71739','71740','71741','71742','71743','71753','71754','71755','71757','71774','71775'],
+                     ARRAY['56111'],                            'เฝือกขา: ambulation training 56111'),
+  ('B1','ตรวจภายใน', ARRAY['38302','1B004N','1B004P'],           ARRAY['55620'], 'pap smear: ตรวจภายใน 55620'),
+  ('B2','ตรวจทวาร',  ARRAY['71550'],                             ARRAY['55520'], 'proctoscope: PR 55520'),
+  ('C1','พ่นยา',     ARRAY['DRUG:NEB'],                          ARRAY['55320'], 'ยาพ่น Berodual/Salbutamol: พ่นยา 55320'),
+  ('D1','ใส่ท่อช่วยหายใจ', ARRAY['3001','3002','71310'],         ARRAY['55311'], 'ETT/ใส่ท่อ: suction 55311'),
+  ('D2','ใส่ท่อช่วยหายใจ', ARRAY['3001','3002','71310'],         ARRAY['55310'], 'ETT/ใส่ท่อ: clear airway 55310'),
+  ('D3','ใส่ท่อช่วยหายใจ', ARRAY['3001','3002'],                 ARRAY['71310'], 'มีท่อ ETT: ค่าใส่ท่อ 71310'),
+  ('D4','ใส่ท่อช่วยหายใจ', ARRAY['71310'],                       ARRAY['3001','3002'], 'ใส่ท่อ 71310: ท่อช่วยหายใจ 3001/3002'),
+  ('E1','high alert drug', ARRAY['DRUG:HAD'],                    ARRAY['52910'], 'high alert drug: infusion pump 52910'),
+  ('F1','CPR',       ARRAY['71011'],                             ARRAY['4511'],  'CPR 71011: AED pad 4511')
+),
+rule_hit AS (
+  SELECT c.vn,
+         string_agg(DISTINCT rl.grp,   ', ')   AS rule_grp,
+         string_agg(DISTINCT rl.label, ', ')   AS rule_add
+  FROM   vcode c
+  JOIN   rules rl ON c.codes && rl.trig::text[] AND NOT (c.codes && rl.req::text[])
+  GROUP  BY c.vn
+),
+allv AS (
+  SELECT vn FROM inj_out
+  UNION
+  SELECT vn FROM rule_hit
+),
+fin AS (
+  SELECT v.vstdate, v.vn, v.hn, v.main_dep, v.hipdata_code, v.pttype_name,
+         concat_ws(', ', CASE WHEN i.vn IS NOT NULL THEN 'ยาฉีด/สารน้ำ' END, h.rule_grp) AS category,
+         CASE WHEN h.vn IS NOT NULL AND i.inj_status IN ('คีย์เกิน','ไม่ครบ+เกิน') THEN 'ไม่ครบ+เกิน'
+              WHEN h.vn IS NOT NULL THEN 'คีย์ไม่ครบ'
+              ELSE i.inj_status END                                                     AS status,
+         NULLIF(concat_ws(' | ',
+           CASE WHEN COALESCE(i.inj_add,'') <> '' THEN 'ยาฉีด: ' || i.inj_add END,
+           h.rule_add), '')                                                             AS need_add,
+         NULLIF(i.inj_remove, '')                                                       AS need_check_remove,
+         i.drug_vs_charge, i.route_note, i.bring_evidence, i.drug_list
+  FROM   allv a
+  JOIN   v ON v.vn = a.vn
+  LEFT   JOIN inj_out  i ON i.vn = a.vn
+  LEFT   JOIN rule_hit h ON h.vn = a.vn
+)
+SELECT f.vstdate                                   AS visit_date,
+       f.vn                                        AS vn,
+       f.hn                                        AS hn,
+       concat(pt.pname, pt.fname, ' ', pt.lname)   AS patient_name,
+       f.hipdata_code                              AS hip,
+       f.pttype_name                               AS pttype_name,
+       k.department                                AS department,
+       f.category                                  AS category,
+       f.status                                    AS status,
+       f.need_add                                  AS need_add,
+       f.need_check_remove                         AS need_check_remove,
+       f.drug_vs_charge                            AS drug_vs_charge,
+       f.route_note                                AS route_note,
+       f.bring_evidence                            AS bring_evidence,
+       f.drug_list                                 AS drug_list
+FROM   fin f
+LEFT   JOIN patient       pt ON pt.hn     = f.hn
+LEFT   JOIN kskdepartment k  ON k.depcode = f.main_dep
+ORDER  BY CASE f.status WHEN 'ไม่ครบ+เกิน' THEN 1 WHEN 'คีย์ไม่ครบ' THEN 2 WHEN 'คีย์เกิน' THEN 3
+                        WHEN 'ตรวจจำนวน' THEN 4 ELSE 5 END,
+          f.vstdate, f.vn;</script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const sql=$('sqlCode').textContent.replace(/^\s+/,'').replace(/\s+$/,'')+'\n';
+  $('sqlOut').textContent=sql;
+  $('meta').textContent=(sql.split('\n').length-1)+' บรรทัด';
+  $('copyBtn').addEventListener('click',async()=>{
+    let ok=false;
+    try{ await navigator.clipboard.writeText(sql); ok=true; }catch(e){
+      try{ const ta=document.createElement('textarea'); ta.value=sql; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); ok=document.execCommand('copy'); ta.remove(); }catch(e2){}
+    }
+    if(!ok){ const r=document.createRange(); r.selectNodeContents($('sqlOut')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); }
+    $('toast').textContent= ok?'คัดลอกแล้ว ✓':'เลือกข้อความแล้ว กด Ctrl+C';
+    setTimeout(()=>$('toast').textContent='',2500);
+  });
+})();
+</script>
+</body>
+</html>
