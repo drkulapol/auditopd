@@ -68,7 +68,7 @@
 <body>
 <header class="top"><div class="wrap">
   <h1>AUDIT เวชระเบียน ผู้ป่วยนอกสิทธิเบิกได้ / อปท.</h1>
-  <p>SQL สำหรับ HOSxP XE (PostgreSQL) หา visit ที่คีย์ค่าฉีด/ค่าให้สารน้ำไม่ครบหรือเกิน และหัตถการ/อุปกรณ์ที่ต้องคีย์คู่กัน (เฝือก, pap smear, พ่นยา, ใส่ท่อ, high alert drug, CPR) เพื่อให้งานประกันแก้ไขก่อนส่งเบิก</p>
+  <p>SQL สำหรับ HOSxP XE (PostgreSQL) หา visit ที่คีย์ค่าฉีด/ค่าให้สารน้ำไม่ครบหรือเกิน หัตถการ/อุปกรณ์ที่ต้องคีย์คู่กัน (เฝือก, อุปกรณ์ช่วยเดิน, pap smear, พ่นยา, ใส่ท่อ, high alert drug, CPR, refer), visit ที่ไม่มี principal diagnosis หรือค่าใช้จ่ายเป็น 0 และค่าบริการ OPD ที่ไม่ควรเก็บ เพื่อให้งานประกันแก้ไขก่อนส่งเบิก</p>
 </div></header>
 
 <main>
@@ -90,12 +90,12 @@
   <div class="two">
     <section class="card">
       <h2>สถานะในผลลัพธ์ (เรียงตามความสำคัญ)</h2>
-      <div class="hint" style="margin:-4px 0 8px">คอลัมน์ <code>category</code> บอกว่าแถวนี้มาจากส่วนไหน: ยาฉีด/สารน้ำ และ/หรือ กลุ่มกฎส่วนที่ 2 (เฝือก, ตรวจภายใน, พ่นยา ฯลฯ) · ถ้าผิดกฎส่วนที่ 2 จะนับเป็น คีย์ไม่ครบ</div>
+      <div class="hint" style="margin:-4px 0 8px">คอลัมน์ <code>category</code> บอกว่าแถวนี้มาจากส่วนไหน: ยาฉีด/สารน้ำ และ/หรือ กลุ่มกฎส่วนที่ 2 (เฝือก, ตรวจภายใน, พ่นยา, วินิจฉัย ฯลฯ) และ/หรือ ค่าบริการ OPD (ส่วนที่ 3) · ผิดกฎส่วนที่ 2 นับเป็น คีย์ไม่ครบ · ผิดส่วนที่ 3 นับเป็น คีย์เกิน</div>
       <table class="legend">
         <tr><th style="width:120px">status</th><th>ความหมาย / สิ่งที่ต้องทำ</th></tr>
         <tr><td><span class="pill p1">ไม่ครบ+เกิน</span></td><td>บางกลุ่มขาด บางกลุ่มเกิน ดูคอลัมน์ need_add และ need_check_remove</td></tr>
-        <tr><td><span class="pill p2">คีย์ไม่ครบ</span></td><td>มียาฉีด/สารน้ำ แต่ไม่มีค่าฉีดหรือค่าให้สารน้ำ (หรือไม่มีค่าเข้าข้อ/IL) → เพิ่มตาม need_add</td></tr>
-        <tr><td><span class="pill p3">คีย์เกิน</span></td><td>ค่าฉีด/สารน้ำมากกว่าจำนวนยา → ตรวจและตัดตาม need_check_remove</td></tr>
+        <tr><td><span class="pill p2">คีย์ไม่ครบ</span></td><td>มียาฉีด/สารน้ำ แต่ไม่มีค่าฉีดหรือค่าให้สารน้ำ (หรือไม่มีค่าเข้าข้อ/IL) หรือผิดกฎส่วนที่ 2 → เพิ่ม/แก้ตาม need_add</td></tr>
+        <tr><td><span class="pill p3">คีย์เกิน</span></td><td>ค่าฉีด/สารน้ำมากกว่าจำนวนยา หรือเก็บค่าบริการ OPD 55020/55021 ทั้งที่ไม่ได้พบแพทย์ → ตรวจและตัดตาม need_check_remove</td></tr>
         <tr><td><span class="pill p4">ตรวจจำนวน</span></td><td>ค่าฉีดน้อยกว่าจำนวนยา (ขึ้นเฉพาะเมื่อเปิด check_qty) ถ้าไม่ได้ผสม drip อาจขาด</td></tr>
         <tr><td><span class="pill p5">ตรวจวิธีใช้</span></td><td>จำนวนรวมครบ แต่กลุ่มไม่ตรง เช่น วิธีใช้ IM แต่คีย์ 71820 → แก้วิธีใช้ในใบสั่งยาให้ตรงที่ให้จริง</td></tr>
         <tr><td><span class="pill p6">นำยามาเอง?</span></td><td>มีค่าฉีดแต่ไม่มียาใน visit และมีหลักฐาน (CC หรือเคยจ่ายยาฉีด ≥2 หน่วยใน N วันก่อน) → ตรวจก่อนตัด</td></tr>
@@ -103,7 +103,7 @@
 
       <h3>คอลัมน์ผลลัพธ์</h3>
       <ul class="rules">
-        <li><code>need_add</code> รหัสที่ควรเพิ่ม (ยาฉีด + กฎส่วนที่ 2 คั่นด้วย |) · <code>need_check_remove</code> รายการที่ควรตรวจ/ตัด</li>
+        <li><code>need_add</code> รหัสที่ควรเพิ่ม (ยาฉีด + กฎส่วนที่ 2 คั่นด้วย |) · <code>need_check_remove</code> รายการที่ควรตรวจ/ตัด (ยาฉีด + ค่าบริการ OPD คั่นด้วย |)</li>
         <li><code>drug_vs_charge</code> จำนวนยา / จำนวนค่าฉีด แยกกลุ่ม เช่น <code>IV 2/1</code> = ยา IV 2 รายการ คีย์ค่าฉีด IV 1</li>
         <li><code>route_note</code> คีย์ผิดกลุ่ม เช่น ยา IV แต่คีย์ค่าฉีด IM</li>
         <li><code>bring_evidence</code> หลักฐานนำยามาเอง · <code>drug_list</code> ยาที่นับ พร้อมกลุ่มที่ระบบจัด</li>
@@ -130,20 +130,35 @@
   <section class="card" style="margin-top:16px">
     <h2>ส่วนที่ 2: กฎ “ถ้ามี A ต้องมี B”</h2>
     <table class="legend">
-      <tr><th style="width:60px">กฎ</th><th style="width:150px">กลุ่ม</th><th>ถ้ามีรหัส (A)</th><th>ต้องมีอย่างน้อย 1 รหัส (B)</th></tr>
-      <tr><td>A1</td><td>เฝือก</td><td>เฝือกแขน 71730–71737, 71750–71752, 71763, 71772</td><td>arm sling 8602</td></tr>
-      <tr><td>A2</td><td>เฝือก</td><td>เฝือกขา 71738–71743, 71753–71755, 71757, 71774, 71775</td><td>อุปกรณ์ช่วยเดิน 8701/8702/8703/8704/8711</td></tr>
-      <tr><td>A3</td><td>เฝือก</td><td>เฝือกขา (ชุดเดียวกับ A2)</td><td>ambulation training 56111</td></tr>
-      <tr><td>B1</td><td>ตรวจภายใน</td><td>pap smear 38302, 1B004N, 1B004P</td><td>ตรวจภายใน 55620</td></tr>
-      <tr><td>B2</td><td>ตรวจทวาร</td><td>proctoscope 71550</td><td>PR 55520</td></tr>
-      <tr><td>C1</td><td>พ่นยา</td><td>ยาพ่น nebulizer Berodual/Salbutamol/Ventolin (ชนิด ml/solution)</td><td>พ่นยา 55320</td></tr>
-      <tr><td>D1</td><td>ใส่ท่อช่วยหายใจ</td><td>ท่อ ETT 3001/3002 หรือใส่ท่อ 71310</td><td>suction 55311</td></tr>
-      <tr><td>D2</td><td>ใส่ท่อช่วยหายใจ</td><td>ท่อ ETT 3001/3002 หรือใส่ท่อ 71310</td><td>clear airway 55310</td></tr>
-      <tr><td>D3</td><td>ใส่ท่อช่วยหายใจ</td><td>ท่อ ETT 3001/3002</td><td>ค่าใส่ท่อ 71310</td></tr>
-      <tr><td>D4</td><td>ใส่ท่อช่วยหายใจ</td><td>ใส่ท่อ 71310</td><td>ท่อช่วยหายใจ 3001/3002</td></tr>
-      <tr><td>E1</td><td>high alert drug</td><td>norepinephrine (Levophed), streptokinase</td><td>infusion pump 52910</td></tr>
-      <tr><td>F1</td><td>CPR</td><td>CPR 71011</td><td>AED pad 4511</td></tr>
+      <tr><th style="width:60px">กฎ</th><th style="width:140px">กลุ่ม</th><th>ถ้ามีรหัส (A)</th><th>ต้องมีอย่างน้อย 1 รหัส (B)</th><th>ไม่ต้องตรวจเมื่อ</th></tr>
+      <tr><td>A1</td><td>เฝือก</td><td>เฝือกแขน 71730–71737, 71750–71752, 71763, 71772</td><td>arm sling 8602</td><td>เปลี่ยนเฝือก*</td></tr>
+      <tr><td>A2</td><td>เฝือก</td><td>เฝือกขา 71738–71743, 71753–71755, 71757, 71774, 71775</td><td>อุปกรณ์ช่วยเดิน 8701/8702/8703/8704/8711</td><td>เปลี่ยนเฝือก*</td></tr>
+      <tr><td>A3</td><td>เฝือก</td><td>เฝือกขา (ชุดเดียวกับ A2)</td><td>ambulation training 56111</td><td>เปลี่ยนเฝือก*</td></tr>
+      <tr><td>A4</td><td>อุปกรณ์ช่วยเดิน</td><td>อุปกรณ์ช่วยเดิน 8701/8702/8703/8704/8711</td><td>ambulation training 56111</td><td>–</td></tr>
+      <tr><td>B1</td><td>ตรวจภายใน</td><td>pap smear 38302, 1B004N, 1B004P</td><td>ตรวจภายใน 55620</td><td>–</td></tr>
+      <tr><td>B2</td><td>ตรวจทวาร</td><td>proctoscope 71550</td><td>PR 55520</td><td>–</td></tr>
+      <tr><td>C1</td><td>พ่นยา</td><td>ยาพ่น nebulizer Berodual/Salbutamol/Ventolin (ชนิด ml/solution)</td><td>พ่นยา 55320</td><td>–</td></tr>
+      <tr><td>D1</td><td>ใส่ท่อช่วยหายใจ</td><td>ท่อ ETT 3001/3002 หรือใส่ท่อ 71310</td><td>suction 55311</td><td>–</td></tr>
+      <tr><td>D2</td><td>ใส่ท่อช่วยหายใจ</td><td>ท่อ ETT 3001/3002 หรือใส่ท่อ 71310</td><td>clear airway 55310</td><td>–</td></tr>
+      <tr><td>D3</td><td>ใส่ท่อช่วยหายใจ</td><td>ท่อ ETT 3001/3002</td><td>ค่าใส่ท่อ 71310</td><td>–</td></tr>
+      <tr><td>D4</td><td>ใส่ท่อช่วยหายใจ</td><td>ใส่ท่อ 71310</td><td>ท่อช่วยหายใจ 3001/3002</td><td>–</td></tr>
+      <tr><td>E1</td><td>high alert drug</td><td>norepinephrine (Levophed), streptokinase</td><td>infusion pump 52910</td><td>–</td></tr>
+      <tr><td>F1</td><td>CPR</td><td>CPR 71011</td><td>AED pad 4511</td><td>–</td></tr>
+      <tr><td>G1</td><td>วินิจฉัย</td><td>ทุก visit</td><td>principal diagnosis (diagtype 1)</td><td>–</td></tr>
+      <tr><td>G2</td><td>ค่าใช้จ่าย</td><td>ทุก visit</td><td>ค่าใช้จ่ายรวม (sum_price) มากกว่า 0</td><td>–</td></tr>
+      <tr><td>H1</td><td>refer</td><td>S1802</td><td>S1801</td><td>–</td></tr>
     </table>
+    <div class="hint" style="margin-top:8px">* เปลี่ยนเฝือก = มี ICD10 Z47.9 หรือเคยใส่เฝือกกลุ่มเดียวกัน (แขน/ขา) ภายใน 6 สัปดาห์ (42 วัน) ก่อน → ไม่บังคับ arm sling / อุปกรณ์ช่วยเดิน / 56111 ซ้ำ</div>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <h2>ส่วนที่ 3: ค่าบริการผู้ป่วยนอก 55020/55021 ที่ไม่ควรเก็บ</h2>
+    <ul class="rules">
+      <li>มาทำแผลอย่างเดียว (55810/55811/55812 ไม่มีหัตถการอื่น) <b>หรือ</b> มากายภาพบำบัดอย่างเดียว (ADP type 20)</li>
+      <li>และไม่ได้พบแพทย์: ไม่มีผู้สั่งรายการหรือผู้ลงวินิจฉัยที่เลขใบอนุญาตขึ้นต้นด้วย ว.</li>
+      <li>แต่ยังคีย์ค่าบริการผู้ป่วยนอก 55020/55021 → ขึ้นสถานะ <span class="pill p3">คีย์เกิน</span> ให้ตรวจและตัด</li>
+      <li>ไม่นับ 52440/52441 (monitor อัตโนมัติ) เป็นหัตถการอื่น</li>
+    </ul>
   </section>
 </main>
 
@@ -154,7 +169,10 @@
 </footer>
 
 <script type="text/plain" id="sqlCode">/* Worklist audit OPD สิทธิ OFC/LGO : แก้ช่วงวันที่ในบล็อก cfg แล้วรันทั้งก้อน  (1 แถว = 1 visit ที่มีปัญหา)
-   ส่วนที่ 1 ยาฉีด/สารน้ำ  |  ส่วนที่ 2 กฎ ถ้ามี A ต้องมี B (เฝือก, pap smear, proctoscope, พ่นยา, ใส่ท่อ, high alert drug, CPR)
+   ส่วนที่ 1 ยาฉีด/สารน้ำ  |  ส่วนที่ 2 กฎ ถ้ามี A ต้องมี B (เฝือก, อุปกรณ์ช่วยเดิน, pap smear, proctoscope, พ่นยา,
+            ใส่ท่อ, high alert drug, CPR, refer) + ทุก visit ต้องมี principal diagnosis และค่าใช้จ่ายรวมต้องไม่เป็น 0
+   ส่วนที่ 3 มาทำแผล (55810/55811/55812) หรือกายภาพ (adp type 20) อย่างเดียว และไม่ได้พบแพทย์ (licenseno ว.) -> ไม่ควรมี 55020/55021
+   เปลี่ยนเฝือก (ICD10 Z47.9 หรือเคยใส่เฝือกกลุ่มเดียวกันใน 6 สัปดาห์ก่อน) ไม่บังคับ arm sling / อุปกรณ์ช่วยเดิน / 56111 ซ้ำ
    เพิ่ม/แก้กฎส่วนที่ 2 ได้ที่ CTE rules: trig = มีรหัสใดรหัสหนึ่ง, req = ต้องมีอย่างน้อย 1 รหัส (ADP code หรือแท็ก DRUG:xxx)
    ===== ส่วนที่ 1 ยาฉีด/สารน้ำ =====
    วิธีเทียบแบบรวม: ยาฉีด IV/IM/SC + สารน้ำ (รวมกัน) เทียบกับ ค่าฉีด 55822/55823/55824 + ค่าให้สารน้ำ 55820 (รวมกัน)
@@ -174,7 +192,7 @@
    RIG ฉีดรอบแผล (infiltrate) นับเป็นกลุ่ม intralesion
    ตัดออกไม่ตรวจ: ยาใช้ภายนอก (ล้างจมูก/ล้างแผล/พ่น), ยารับประทาน (glucose ใน visit ฝากครรภ์: ICD10 Z34/Z35/Z36/O24/Z13.1 หรือมี ADP 30011, หรือวิธีใช้เป็นกิน/ดื่ม) และยาฉีดกลับบ้าน (insulin penfill/pen, วิธีใช้ ก่อนอาหาร/ก่อนนอน/ฉีดเอง) */
 WITH cfg AS (
-  SELECT DATE '2025-10-01'          AS d1,          /* วันที่เริ่ม */
+  SELECT DATE '2026-10-01'          AS d1,          /* วันที่เริ่ม */
          DATE '2026-10-31'          AS d2,          /* วันที่สิ้นสุด */
          ARRAY['OFC','LGO']::text[] AS hip,         /* pttype.hipdata_code */
          ARRAY['55820']::text[]     AS fluid_adp,   /* ADP ค่าให้สารน้ำ 55820 */
@@ -190,6 +208,15 @@ WITH cfg AS (
          '^Z51[89]'::text           AS bring_icd,   /* ICD10 Z51.8/Z51.9 = อาจนำยามาเอง -> ไม่ตรวจกรณีค่าฉีดมากกว่ายา */
          '(berodual|salbutamol|ventolin)'::text AS neb_drug_regex, /* ยาพ่นแบบ nebulizer (คิดต่อ ml) ต้องมี 55320 */
          '(norepinephrine|levophed|streptokinase)'::text AS had_regex, /* high alert drug ต้องมี infusion pump 52910 (เพิ่มชื่อยาได้) */
+         ARRAY['71730','71731','71732','71733','71735','71736','71737','71750','71751','71752','71763','71772']::text[] AS arm_cast, /* ADP ใส่เฝือกแขน */
+         ARRAY['71738','71739','71740','71741','71742','71743','71753','71754','71755','71757','71774','71775']::text[] AS leg_cast, /* ADP ใส่เฝือกขา */
+         42                         AS recast_days, /* เปลี่ยนเฝือก: เคยใส่เฝือกกลุ่มเดียวกันภายในกี่วัน (6 สัปดาห์) -> ไม่บังคับ sling/อุปกรณ์ช่วยเดิน/56111 ซ้ำ */
+         '^Z479'::text              AS recast_icd,  /* ICD10 เปลี่ยน/ติดตามเฝือก -> ไม่บังคับ sling/อุปกรณ์ช่วยเดิน/56111 ซ้ำ */
+         ARRAY['55020','55021']::text[] AS opd_fee,        /* ค่าบริการผู้ป่วยนอก */
+         ARRAY['55810','55811','55812']::text[] AS dress_adp, /* ทำแผล */
+         ARRAY['52440','52441']::text[] AS ignore_adp,     /* รายการที่ไม่นับเป็นหัตถการอื่น (monitor อัตโนมัติ) */
+         '20'::text                 AS physio_type,  /* nhso_adp_type_id ของกายภาพบำบัด */
+         '^ *ว'::text               AS md_license,   /* doctor.licenseno ของแพทย์ (ว.xxxxx) = ตรวจโดยแพทย์ */
          false                      AS check_qty    /* true = เตือนเมื่อจำนวนค่าฉีดน้อยกว่าจำนวนยา (ยา drip อาจเตือนเกิน) */
 ),
 v AS (
@@ -453,54 +480,132 @@ vcode AS (   /* ===== ส่วนที่ 2: รหัส ADP ทั้งห�
     JOIN   drugitems d ON d.icode = oi.icode
     CROSS  JOIN cfg
     WHERE  oi.qty > 0 AND d.name ~* cfg.had_regex
+    UNION ALL
+    SELECT dg.vn, 'CTX:RECAST_DX'
+    FROM   ovstdiag dg
+    JOIN   v ON v.vn = dg.vn
+    CROSS  JOIN cfg
+    WHERE  replace(upper(dg.icd10), '.', '') ~ cfg.recast_icd
+    UNION ALL
+    SELECT v.vn, CASE WHEN n.nhso_adp_code = ANY(cfg.arm_cast) THEN 'CTX:PRIOR_ARM' ELSE 'CTX:PRIOR_LEG' END
+    FROM   v
+    CROSS  JOIN cfg
+    JOIN   opitemrece oi ON oi.hn = v.hn
+                        AND oi.vstdate >= v.vstdate - cfg.recast_days
+                        AND oi.vstdate <  v.vstdate
+    JOIN   nondrugitems n ON n.icode = oi.icode
+    WHERE  n.nhso_adp_code = ANY(cfg.arm_cast || cfg.leg_cast)
+    UNION ALL
+    SELECT v.vn, 'CTX:ALL' FROM v
+    UNION ALL
+    SELECT dg.vn, 'CTX:PDX'
+    FROM   ovstdiag dg
+    JOIN   v ON v.vn = dg.vn
+    WHERE  dg.diagtype = '1' AND COALESCE(dg.icd10,'') <> ''
+    UNION ALL
+    SELECT oi.vn, 'CTX:HASCOST'
+    FROM   opitemrece oi
+    JOIN   v ON v.vn = oi.vn
+    GROUP  BY oi.vn
+    HAVING SUM(COALESCE(oi.sum_price,0)) > 0
   ) x
   GROUP  BY x.vn
 ),
-rules (rule_id, grp, trig, req, label) AS (VALUES
-  ('A1','เฝือก',     ARRAY['71730','71731','71732','71733','71735','71736','71737','71750','71751','71752','71763','71772'],
-                     ARRAY['8602'],                             'เฝือกแขน: arm sling 8602'),
-  ('A2','เฝือก',     ARRAY['71738','71739','71740','71741','71742','71743','71753','71754','71755','71757','71774','71775'],
-                     ARRAY['8701','8702','8703','8704','8711'], 'เฝือกขา: อุปกรณ์ช่วยเดิน 8701/8702/8703/8704/8711'),
-  ('A3','เฝือก',     ARRAY['71738','71739','71740','71741','71742','71743','71753','71754','71755','71757','71774','71775'],
-                     ARRAY['56111'],                            'เฝือกขา: ambulation training 56111'),
-  ('B1','ตรวจภายใน', ARRAY['38302','1B004N','1B004P'],           ARRAY['55620'], 'pap smear: ตรวจภายใน 55620'),
-  ('B2','ตรวจทวาร',  ARRAY['71550'],                             ARRAY['55520'], 'proctoscope: PR 55520'),
-  ('C1','พ่นยา',     ARRAY['DRUG:NEB'],                          ARRAY['55320'], 'ยาพ่น Berodual/Salbutamol: พ่นยา 55320'),
-  ('D1','ใส่ท่อช่วยหายใจ', ARRAY['3001','3002','71310'],         ARRAY['55311'], 'ETT/ใส่ท่อ: suction 55311'),
-  ('D2','ใส่ท่อช่วยหายใจ', ARRAY['3001','3002','71310'],         ARRAY['55310'], 'ETT/ใส่ท่อ: clear airway 55310'),
-  ('D3','ใส่ท่อช่วยหายใจ', ARRAY['3001','3002'],                 ARRAY['71310'], 'มีท่อ ETT: ค่าใส่ท่อ 71310'),
-  ('D4','ใส่ท่อช่วยหายใจ', ARRAY['71310'],                       ARRAY['3001','3002'], 'ใส่ท่อ 71310: ท่อช่วยหายใจ 3001/3002'),
-  ('E1','high alert drug', ARRAY['DRUG:HAD'],                    ARRAY['52910'], 'high alert drug: infusion pump 52910'),
-  ('F1','CPR',       ARRAY['71011'],                             ARRAY['4511'],  'CPR 71011: AED pad 4511')
+rules AS (   /* trig = มีรหัสใดรหัสหนึ่ง | req = ต้องมีอย่างน้อย 1 รหัส | exempt = ถ้ามีรหัส/บริบทนี้ ไม่ต้องตรวจกฎนี้ */
+  SELECT 'A1' AS rule_id, 'เฝือก' AS grp, cfg.arm_cast AS trig, ARRAY['8602']::text[] AS req,
+         ARRAY['CTX:RECAST_DX','CTX:PRIOR_ARM']::text[] AS exempt, 'เฝือกแขน: arm sling 8602' AS label FROM cfg
+  UNION ALL
+  SELECT 'A2', 'เฝือก', cfg.leg_cast, ARRAY['8701','8702','8703','8704','8711'],
+         ARRAY['CTX:RECAST_DX','CTX:PRIOR_LEG'], 'เฝือกขา: อุปกรณ์ช่วยเดิน 8701/8702/8703/8704/8711' FROM cfg
+  UNION ALL
+  SELECT 'A3', 'เฝือก', cfg.leg_cast, ARRAY['56111'],
+         ARRAY['CTX:RECAST_DX','CTX:PRIOR_LEG'], 'เฝือกขา: ambulation training 56111' FROM cfg
+  UNION ALL
+  SELECT * FROM (VALUES
+    ('B1','ตรวจภายใน', ARRAY['38302','1B004N','1B004P'], ARRAY['55620'], ARRAY[]::text[], 'pap smear: ตรวจภายใน 55620'),
+    ('B2','ตรวจทวาร',  ARRAY['71550'],                 ARRAY['55520'], ARRAY[]::text[], 'proctoscope: PR 55520'),
+    ('C1','พ่นยา',     ARRAY['DRUG:NEB'],              ARRAY['55320'], ARRAY[]::text[], 'ยาพ่น Berodual/Salbutamol: พ่นยา 55320'),
+    ('D1','ใส่ท่อช่วยหายใจ', ARRAY['3001','3002','71310'], ARRAY['55311'], ARRAY[]::text[], 'ETT/ใส่ท่อ: suction 55311'),
+    ('D2','ใส่ท่อช่วยหายใจ', ARRAY['3001','3002','71310'], ARRAY['55310'], ARRAY[]::text[], 'ETT/ใส่ท่อ: clear airway 55310'),
+    ('D3','ใส่ท่อช่วยหายใจ', ARRAY['3001','3002'],     ARRAY['71310'], ARRAY[]::text[], 'มีท่อ ETT: ค่าใส่ท่อ 71310'),
+    ('D4','ใส่ท่อช่วยหายใจ', ARRAY['71310'],           ARRAY['3001','3002'], ARRAY[]::text[], 'ใส่ท่อ 71310: ท่อช่วยหายใจ 3001/3002'),
+    ('E1','high alert drug', ARRAY['DRUG:HAD'],        ARRAY['52910'], ARRAY[]::text[], 'high alert drug: infusion pump 52910'),
+    ('F1','CPR',       ARRAY['71011'],                 ARRAY['4511'],  ARRAY[]::text[], 'CPR 71011: AED pad 4511'),
+    ('A4','อุปกรณ์ช่วยเดิน', ARRAY['8701','8702','8703','8704','8711'], ARRAY['56111'], ARRAY[]::text[], 'อุปกรณ์ช่วยเดิน: ambulation training 56111'),
+    ('G1','วินิจฉัย',  ARRAY['CTX:ALL'],               ARRAY['CTX:PDX'],     ARRAY[]::text[], 'ไม่มี principal diagnosis'),
+    ('G2','ค่าใช้จ่าย', ARRAY['CTX:ALL'],              ARRAY['CTX:HASCOST'], ARRAY[]::text[], 'ค่าใช้จ่ายรวมเป็น 0'),
+    ('H1','refer',     ARRAY['S1802'],                 ARRAY['S1801'], ARRAY[]::text[], 'refer S1802: ต้องมี S1801')
+  ) t (rule_id, grp, trig, req, exempt, label)
 ),
 rule_hit AS (
   SELECT c.vn,
          string_agg(DISTINCT rl.grp,   ', ')   AS rule_grp,
          string_agg(DISTINCT rl.label, ', ')   AS rule_add
   FROM   vcode c
-  JOIN   rules rl ON c.codes && rl.trig::text[] AND NOT (c.codes && rl.req::text[])
+  JOIN   rules rl ON c.codes && rl.trig::text[]
+                 AND NOT (c.codes && rl.req::text[])
+                 AND NOT (c.codes && rl.exempt::text[])
   GROUP  BY c.vn
+),
+vit AS (   /* ===== ส่วนที่ 3: ค่าบริการผู้ป่วยนอก 55020/55021 ไม่ควรมี ในกรณีมาทำแผล/กายภาพอย่างเดียว ===== */
+  SELECT oi.vn,
+         COUNT(*) FILTER (WHERE n.nhso_adp_code = ANY(cfg.opd_fee))                               AS n_opd,
+         COUNT(*) FILTER (WHERE n.nhso_adp_code = ANY(cfg.dress_adp))                             AS n_dress,
+         COUNT(*) FILTER (WHERE COALESCE(n.nhso_adp_code,'') <> ''
+                            AND NOT n.nhso_adp_code = ANY(cfg.opd_fee || cfg.dress_adp || cfg.ignore_adp)) AS n_other_proc,
+         COUNT(*) FILTER (WHERE n.nhso_adp_type_id::text = cfg.physio_type
+                            AND NOT COALESCE(n.nhso_adp_code,'') = ANY(cfg.opd_fee || cfg.ignore_adp))   AS n_physio,
+         COUNT(*) FILTER (WHERE NOT COALESCE(n.nhso_adp_code,'') = ANY(cfg.opd_fee || cfg.ignore_adp)
+                            AND (n.icode IS NULL OR COALESCE(n.nhso_adp_type_id::text,'') <> cfg.physio_type)) AS n_nonphysio,
+         bool_or(dr.licenseno ~ cfg.md_license)                                                    AS md_item
+  FROM   opitemrece oi
+  JOIN   v ON v.vn = oi.vn
+  CROSS  JOIN cfg
+  LEFT   JOIN nondrugitems n ON n.icode = oi.icode
+  LEFT   JOIN doctor dr ON dr.code = oi.doctor
+  WHERE  oi.qty > 0
+  GROUP  BY oi.vn
+),
+fee_hit AS (
+  SELECT t.vn,
+         CASE WHEN t.n_dress > 0 AND t.n_other_proc = 0 THEN 'ทำแผล' ELSE 'กายภาพ' END AS fee_grp,
+         CASE WHEN t.n_dress > 0 AND t.n_other_proc = 0
+              THEN 'มาทำแผลอย่างเดียว ไม่ได้พบแพทย์: ไม่ควรมี 55020/55021'
+              ELSE 'มากายภาพอย่างเดียว ไม่ได้พบแพทย์: ไม่ควรมี 55020/55021' END     AS fee_remove
+  FROM   vit t
+  WHERE  t.n_opd > 0
+    AND  NOT COALESCE(t.md_item, false)
+    AND  NOT EXISTS (SELECT 1 FROM ovstdiag dg JOIN doctor d2 ON d2.code = dg.doctor CROSS JOIN cfg
+                      WHERE dg.vn = t.vn AND d2.licenseno ~ cfg.md_license)
+    AND ( (t.n_dress > 0 AND t.n_other_proc = 0)
+       OR (t.n_physio > 0 AND t.n_nonphysio = 0) )
 ),
 allv AS (
   SELECT vn FROM inj_out
   UNION
   SELECT vn FROM rule_hit
+  UNION
+  SELECT vn FROM fee_hit
 ),
 fin AS (
   SELECT v.vstdate, v.vn, v.hn, v.main_dep, v.hipdata_code, v.pttype_name,
-         concat_ws(', ', CASE WHEN i.vn IS NOT NULL THEN 'ยาฉีด/สารน้ำ' END, h.rule_grp) AS category,
-         CASE WHEN h.vn IS NOT NULL AND i.inj_status IN ('คีย์เกิน','ไม่ครบ+เกิน') THEN 'ไม่ครบ+เกิน'
+         concat_ws(', ', CASE WHEN i.vn IS NOT NULL THEN 'ยาฉีด/สารน้ำ' END, h.rule_grp,
+                   CASE WHEN fh.vn IS NOT NULL THEN 'ค่าบริการ OPD (' || fh.fee_grp || ')' END) AS category,
+         CASE WHEN (h.vn IS NOT NULL OR i.inj_status IN ('คีย์ไม่ครบ','ไม่ครบ+เกิน'))
+                   AND (fh.vn IS NOT NULL OR i.inj_status IN ('คีย์เกิน','ไม่ครบ+เกิน')) THEN 'ไม่ครบ+เกิน'
               WHEN h.vn IS NOT NULL THEN 'คีย์ไม่ครบ'
+              WHEN fh.vn IS NOT NULL AND i.vn IS NULL THEN 'คีย์เกิน'
               ELSE i.inj_status END                                                     AS status,
          NULLIF(concat_ws(' | ',
            CASE WHEN COALESCE(i.inj_add,'') <> '' THEN 'ยาฉีด: ' || i.inj_add END,
            h.rule_add), '')                                                             AS need_add,
-         NULLIF(i.inj_remove, '')                                                       AS need_check_remove,
+         NULLIF(concat_ws(' | ', NULLIF(i.inj_remove, ''), fh.fee_remove), '')          AS need_check_remove,
          i.drug_vs_charge, i.route_note, i.bring_evidence, i.drug_list
   FROM   allv a
   JOIN   v ON v.vn = a.vn
   LEFT   JOIN inj_out  i ON i.vn = a.vn
   LEFT   JOIN rule_hit h ON h.vn = a.vn
+  LEFT   JOIN fee_hit  fh ON fh.vn = a.vn
 )
 SELECT f.vstdate                                   AS visit_date,
        f.vn                                        AS vn,
